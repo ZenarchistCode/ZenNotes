@@ -1,0 +1,10 @@
+name = "Zenarchist's Notes Mod"; // name
+picture = "ZenNotes\data\thumbnail.edds"; // picture in expanded description
+logoSmall = "ZenNotes\data\thumbnail.edds"; // icon next to mod name when description is not expanded
+logo = "ZenNotes\data\thumbnail.edds"; // logo below game menu
+logoOver = "ZenNotes\data\thumbnail.edds"; // on mouse hover over logo
+tooltip = "Zenarchist's Notes Mod"; // tool tip on mouse hover
+overview = "Adds immersive notes to the game."; // overview
+action = "https://zenarchist.io/"; // link
+author = "Zenarchist"; // author
+version = "1.0"; // version
