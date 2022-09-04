@@ -69,7 +69,8 @@ class ZenNotesConfig
 			NoteDateFormat.MonthName.Insert("December");
 
 			// Set default blacklisted words
-			WordBlacklist.Insert("REALLY_NASTY_WORDS_YOU_DONT_WANT_WRITTEN");
+			WordBlacklist.Insert("REALLY_NASTY_WORDS_THAT");
+			WordBlacklist.Insert("YOU_DONT_WANT_WRITTEN");
 
 			// Save config
 			Save();
@@ -80,7 +81,7 @@ class ZenNotesConfig
 	void Save()
 	{
 		if (!FileExist(zenModFolder))
-		{ // If config folder doesn't exist, create it.
+		{	// If config folder doesn't exist, create it.
 			MakeDirectory(zenModFolder);
 		}
 
@@ -89,9 +90,20 @@ class ZenNotesConfig
 	}
 
 	// Check if the given message contains a blacklisted word
+	static const string STRIP_CHARS = " /~|!@#$%^&*()_-+=[{]};:'\",<.>/?`~\\";
 	bool IsBlacklisted(string msg)
 	{
+		// Trim whitespace & set msg to lower case
+		msg = msg.Trim();
 		msg.ToLower();
+
+		// Cycle through all symbol chars and delete them
+		for (int i = 0; i < STRIP_CHARS.Length(); i++)
+		{
+			msg.Replace(STRIP_CHARS.Get(i), "");
+		}
+
+		// Cycle through all blacklisted words and check for match
 		foreach (string s : WordBlacklist)
 		{
 			s.ToLower();

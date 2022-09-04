@@ -1,8 +1,14 @@
 modded class Paper
 {
     // Prepare required paper note variables
-    private int m_ServerARGBColour = 0;
     private int m_NotePickupTries = 0;
+    Pen_ColorBase m_Pen;
+
+    // Delete paper object - clear pen reference
+    void ~Paper()
+    {
+        m_Pen = NULL;
+    }
 
     // Set note actions
     override void SetActions()
@@ -12,10 +18,10 @@ modded class Paper
 		AddAction(ActionZenWritePaper);
 	}
 
-    // Set paper colour
-    void SetPenColour(int colour)
+    // Set the pen object used to write with
+    void SetPen(Pen_ColorBase pen)
     {
-        m_ServerARGBColour = colour;
+        m_Pen = pen;
     }
 
     // Receive note data from client, then convert paper to written note
@@ -140,6 +146,12 @@ modded class Paper
                         } 
                     }
 
+                    // Consume pen quantity
+                    if (GetZenNotesConfig().PenConsumeQuantity > 0 && m_Pen)
+                    {
+                        m_Pen.SetQuantity(m_Pen.GetQuantity() - GetZenNotesConfig().PenConsumeQuantity);
+                    }
+
                     // Log note for server admins
                     ZenNotesLogger.Log("General", sender.GetName() + " (" + sender.GetPlainId() + ") @ " + this.GetPosition() + " wrote: " + noteData.m_NoteText);
                 }
@@ -221,6 +233,12 @@ modded class Paper
 class ReplacePaperWithNoteLambda extends ReplaceItemWithNewLambdaBase
 {
     ref ZenNoteData m_NoteData;
+
+    void ~ReplacePaperWithNoteLambda()
+    {
+        m_NoteData = NULL;
+        delete m_NoteData;
+    }
 
     void ReplacePaperWithNoteLambda(EntityAI old_item, string new_item_type, ZenNoteData data)
     {

@@ -3,6 +3,36 @@ class ZenNote extends Paper
 	// Store a reference to this note's data
 	protected ref ZenNoteData m_ZenNoteData;
 
+	// Get item description - if player has read the note, display some note text
+	override string GetTooltip()
+	{
+		if (m_ZenNoteData && m_ZenNoteData.m_NoteText)
+		{
+			// Split all the lines in the note
+			TStringArray lineArray = new TStringArray;
+			m_ZenNoteData.m_NoteText.Split("\n", lineArray);
+
+			// Trim the whitespace before/after the line
+			string description = "";
+			foreach (string s : lineArray)
+			{
+				description = description + s.Trim() + ". ";
+			}
+
+			// Delete any whitespace within the line
+			description.Replace("  ", "");
+
+			// If note is very long, shorten it
+			if (description.Length() > 280)
+				description = description.Substring(0, 280);
+
+			// Display the note as a description tooltip
+			return description;
+		}
+
+		return ConfigGetString("descriptionShort");
+	}
+
 	// Set note actions
 	override void SetActions()
 	{

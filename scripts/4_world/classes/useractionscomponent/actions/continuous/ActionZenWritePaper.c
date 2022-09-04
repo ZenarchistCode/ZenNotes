@@ -68,46 +68,36 @@ class ActionZenWritePaper : ActionContinuousBase
 	// Called when action begins on server-side
 	override void OnStartServer(ActionData action_data)
 	{
-		if (GetZenNotesConfig().NoteDateFormat.Format == 0)
-		{
-			// 0 = no date on notes
-			return;
-		}
-
 		// Check if paper is main item or target
 		Paper paper = Paper.Cast(action_data.m_MainItem);
 		if (!paper)
 			paper = Paper.Cast(action_data.m_Target.GetObject());
 
-		if (!paper)
+		// Check if pen is main item or target
+		Pen_ColorBase pen = Pen_ColorBase.Cast(action_data.m_MainItem);
+		if (!pen)
+			pen = Pen_ColorBase.Cast(action_data.m_Target.GetObject());
+
+		// If no paper or pen, stop here
+		if (!paper || !pen)
 			return;
+		
+		// Save pen to paper (so that when note is written by client we can reduce pen quantity)
+		if (GetZenNotesConfig().PenConsumeQuantity > 0)
+		{
+			paper.SetPen(pen);
+		}
+
+		// Check if date is disabled in config
+		if (GetZenNotesConfig().NoteDateFormat.Format == 0)
+		{
+			// 0 = no date on notes, stop here
+			return;
+		}
 
 		// Send server-side date formatted to client
 		Param1<string> data = new Param1<string>(GetZenNotesConfig().GetDate());
 		paper.RPCSingleParam(ZENNOTERPCs.RECEIVE_NOTE_DATE, data, true, action_data.m_Player.GetIdentity());
-	}
-
-	// Called when action ends
-	void End(ActionData action_data)
-	{
-		// Reduce pen quantity
-		if (GetGame().IsServer())
-		{
-			// Check if pen is main item or target
-			Pen_ColorBase pen;
-			
-			if (action_data.m_MainItem)
-				pen = Pen_ColorBase.Cast(action_data.m_MainItem);
-			if (!pen && action_data.m_Target)
-				pen = Pen_ColorBase.Cast(action_data.m_Target.GetObject());
-
-			if (pen)
-			{
-				pen.SetQuantity(pen.GetQuantity() - GetZenNotesConfig().PenConsumeQuantity);
-			}
-		}
-
-		super.End(action_data);
 	}
 
 	// Get the ARGB colour integer for the given pen
