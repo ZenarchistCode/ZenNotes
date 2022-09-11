@@ -166,7 +166,7 @@ modded class Paper
         {
             // For some reason this approach bugs the player's hands?? Seems to work in my other mods though, not sure what I'm doing wrong...
             //EntityAI note;
-            //note = player.GetHumanInventory().CreateInHands("ZenNote")
+            //note = player.GetHumanInventory().CreateInHands("ZenNote");
 
             // Get inventory location of note (should be ground)
             InventoryLocation loc_src = new InventoryLocation;

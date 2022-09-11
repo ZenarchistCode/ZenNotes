@@ -64,6 +64,13 @@ class ZenNoteGUI extends UIScriptedMenu
 		// Load required widgets
 		m_ExitBtn		= ButtonWidget.Cast(layoutRoot.FindAnyWidget("CloseBtn"));
 		m_SelectFontBtn = ButtonWidget.Cast(layoutRoot.FindAnyWidget("FontBtn"));
+		
+		// Set select style language
+		ButtonWidget fontBtn = ButtonWidget.Cast(layoutRoot.FindAnyWidget("FontBtn"));
+		if (fontBtn)
+		{
+			fontBtn.SetText("#STR_ZenNoteStyle");
+		}
 
 		if (!m_ExitBtn || !m_SelectFontBtn)
 		{
