@@ -78,6 +78,7 @@ class ZenNoteGUI extends UIScriptedMenu
 			return NULL;
 		}
 
+		// Prevent user controls while note is open
 		GetGame().GetMission().PlayerControlDisable(INPUT_EXCLUDE_ALL);
 		GetGame().GetMission().GetHud().Show(false);
 
@@ -104,7 +105,6 @@ class ZenNoteGUI extends UIScriptedMenu
 			OnExitBtnClick();
 			return;
 		}
-			
 
 		edit_box.Show(true);
 		edit_box.SetText(data.m_NoteText);
@@ -179,6 +179,9 @@ class ZenNoteGUI extends UIScriptedMenu
 		{
 			box.Enable(!readOnly);
 		}
+
+		// If note is NOT read-only, set last-used font
+		HandleFontClick(-1, GetZenNotesClientConfig().LastUsedFontStyle);
 	}
 
 	// Handles clicks on button widgets
@@ -193,14 +196,14 @@ class ZenNoteGUI extends UIScriptedMenu
 
 		if (w == m_SelectFontBtn)
 		{
-			return HandleFontClick();
+			return HandleFontClick(button);
 		}
 
 		return true;
 	}
 
 	// Handle font click
-	bool HandleFontClick()
+	bool HandleFontClick(int btn, int savedIndex = -1)
 	{
 		// Prepare txt string for swapping editbox contents
 		string msgTxt;
@@ -209,15 +212,32 @@ class ZenNoteGUI extends UIScriptedMenu
 		MultilineEditBoxWidget edit_box_old = m_TextBoxes.Get(m_FontIndex);
 		TextWidget date_old = m_Dates.Get(m_FontIndex);
 
+		// Check button - left click = next font, right click = last font
+		if (btn == 0) // Left click
+			btn = 1;
+		else // Right click
+			btn = -1;
+
 		if (edit_box_old)
 		{
-			m_FontIndex++;
+			// Check for saved font index override
+			if (savedIndex != -1)
+				m_FontIndex = savedIndex;
+			else
+				m_FontIndex = m_FontIndex + btn;
+
+			// Validate lower font index range
+			if (m_FontIndex <= -1)
+				m_FontIndex = m_TextBoxes.Count() - 1;
+
+			// Validate upper font index range
 			if (m_FontIndex >= m_TextBoxes.Count())
 				m_FontIndex = 0;
 
 			MultilineEditBoxWidget edit_box_new = m_TextBoxes.Get(m_FontIndex);
 			TextWidget date_new = m_Dates.Get(m_FontIndex);
 
+			// Update edit boxes
 			if (edit_box_new && date_new)
 			{
 				edit_box_old.GetText(msgTxt);
@@ -301,6 +321,10 @@ class ZenNoteGUI extends UIScriptedMenu
 				}
 			}
 		}
+
+		// Save last used font client-side
+		GetZenNotesClientConfig().LastUsedFontStyle = m_FontIndex;
+		GetZenNotesClientConfig().Save();
 
 		return true;
 	}

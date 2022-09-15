@@ -3,12 +3,12 @@ class CfgPatches
 	class ZenNotes
 	{
 		units[] = {};
-		requiredVersion = 0.1;
+		requiredVersion = 1.0;
 		requiredAddons[] = 
 		{ 
 			"DZ_Data",
 			"DZ_Scripts",
-			"ZenUtilities", // For debug & logging
+			"ZenNotesDefine"
 		};
 	};
 };
@@ -18,15 +18,10 @@ class CfgMods
 	class ZenNotes
 	{
 		dir = "ZenNotes";
-		picture = "";
-		action = "";
-		hideName = 1;
-		hidePicture = 1;
 		name = "ZenNotes";
-		credits = "";
 		author = "Zenarchist";
 		authorID = "0";
-		version = "1.1";
+		version = "1.0";
 		extra = 0;
 		type = "mod";
 		dependencies[] =
@@ -56,50 +51,96 @@ class CfgMods
 
 class CfgVehicles
 {
-	class Paper;
+	class Inventory_Base;
+
+	// Make paper stackable up to 5
+	class Paper : Inventory_Base
+	{
+		canBeSplit = 1;
+		varQuantityInit = 1;
+		varQuantityMin = 0;
+		varQuantityMax = 5;
+		varStackMax = 5;
+		varQuantityDestroyOnMin = 1;
+	};
+
+	// Define a written note (non-stackable)
 	class ZenNote : Paper
 	{
 		scope = 2;
 		model = "\dz\gear\consumables\Paper.p3d";
-		displayName = "Note";
-		descriptionShort = "It's a written note left behind by a survivor...";
-		inventorySlot[] = {}; // fireplace
+		displayName = "$STR_ZenNoteTxt";
+		descriptionShort = "$STR_ZenNoteDesc";
 		canBeSplit = 0;
 		varQuantityInit = 1;
 		varQuantityMin = 0;
 		varQuantityMax = 1;
 		varStackMax = 1;
 	};
+
+	// Define colored pens
 	class Pen_ColorBase
 	{
 		quantityBar = 1;
-		varQuantityInit = 30;
+		varQuantityInit = 100;
 		varQuantityMin = 0;
-		varQuantityMax = 30;
+		varQuantityMax = 100;
 		stackedUnit = "percentage";
 	};
 	class Pen_Black : Pen_ColorBase
 	{
 		scope = 2;
-		displayName = "Black Pen";
-		rgbColor[] = { 0,0,0 };
+		displayName = "$STR_ZenPen_Black";
+		penColor[] = { 10,10,10 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_black_co.paa" };
 	};
 	class Pen_Red : Pen_ColorBase
 	{
 		scope = 2;
-		displayName = "Red Pen";
-		rgbColor[] = { 180,4,4 };
+		displayName = "$STR_ZenPen_Red";
+		penColor[] = { 200,20,20 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_red_co.paa" };
 	};
 	class Pen_Green : Pen_ColorBase
 	{
 		scope = 2;
-		displayName = "Green Pen";
-		rgbColor[] = { 8,138,8 };
+		displayName = "$STR_ZenPen_Green";
+		penColor[] = { 24,150,24 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_green_co.paa" };
 	};
 	class Pen_Blue : Pen_ColorBase
 	{
 		scope = 2;
-		displayName = "Blue Pen";
-		rgbColor[] = { 4,49,180 };
+		displayName = "$STR_ZenPen_Blue";
+		penColor[] = { 0,65,200 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_blue_co.paa" };
+	};
+	class Pen_Pink : Pen_ColorBase
+	{
+		scope = 2;
+		displayName = "$STR_ZenPen_Pink";
+		penColor[] = { 255,0,162 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_pink_co.paa" };
+	};
+	class Pen_Purple : Pen_ColorBase
+	{
+		scope = 2;
+		displayName = "$STR_ZenPen_Purple";
+		penColor[] = { 144,0,255 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_purple_co.paa" };
+	};
+	class Pen_Orange : Pen_ColorBase
+	{
+		scope = 2;
+		displayName = "$STR_ZenPen_Orange";
+		penColor[] = { 255,150,0 };
+		hiddenSelections[] = { "zbytek" };
+		hiddenSelectionsTextures[] = { "ZenNotes\data\textures\loot_pen_orange_co.paa" };
 	};
 };
