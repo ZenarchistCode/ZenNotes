@@ -1,7 +1,7 @@
 class ZenNotesConfig
 {
 	// Static constant config version (is NOT saved to json)
-	static const string CONFIG_VERSION = "1";
+	static const string CONFIG_VERSION = "2";
 
 	// Config location
 	private const static string zenModFolder = "$profile:\\Zenarchist\\";
@@ -9,6 +9,7 @@ class ZenNotesConfig
 
 	// Main config data
 	string ConfigVersion = "";
+	bool AllowChangingFonts;
 	int PenConsumeQuantity;
 	ref ZenNoteDateFormat NoteDateFormat;
 	ref array<string> WordBlacklist = new array<string>;
@@ -17,64 +18,66 @@ class ZenNotesConfig
 	// Load config file or create default file if config doesn't exsit
 	void Load()
 	{
-		if (GetGame().IsServer())
-		{
-			if (FileExist(zenModFolder + zenConfigName))
-			{ // If config exists, load file
-				JsonFileLoader<ZenNotesConfig>.JsonLoadFile(zenModFolder + zenConfigName, this);
+		if (!GetGame().IsDedicatedServer())
+			return;
 
-				// If version mismatch, backup old version of json before replacing it
-				if (ConfigVersion != CONFIG_VERSION)
-				{
-					JsonFileLoader<ZenNotesConfig>.JsonSaveFile(zenModFolder + zenConfigName + "_old", this);
-					ConfigVersion = CONFIG_VERSION;
-				}
-				else
-				{
-					// Config exists and version matches, stop here.
-					return;
-				}
+		if (FileExist(zenModFolder + zenConfigName))
+		{ // If config exists, load file
+			JsonFileLoader<ZenNotesConfig>.JsonLoadFile(zenModFolder + zenConfigName, this);
+
+			// If version mismatch, backup old version of json before replacing it
+			if (ConfigVersion != CONFIG_VERSION)
+			{
+				JsonFileLoader<ZenNotesConfig>.JsonSaveFile(zenModFolder + zenConfigName + "_old", this);
+				ConfigVersion = CONFIG_VERSION;
 			}
-
-			// Clear old config
-			WordBlacklist.Clear();
-
-			// Set new config version
-			ConfigVersion = CONFIG_VERSION;
-
-			// Set default config
-			SendPlayerWarning = "We don't tolerate that sort of language on our server. Your note has been logged and any repeat offenses may result in a permenent ban.";
-			PenConsumeQuantity = 3;
-
-			// Set default date format
-			NoteDateFormat = new ZenNoteDateFormat;
-			NoteDateFormat.Format = 1;
-			NoteDateFormat.DaySuffix = new array<string>;
-			NoteDateFormat.DaySuffix.Insert("st");
-			NoteDateFormat.DaySuffix.Insert("nd");
-			NoteDateFormat.DaySuffix.Insert("rd");
-			NoteDateFormat.DaySuffix.Insert("th");
-			NoteDateFormat.MonthName = new array<string>;
-			NoteDateFormat.MonthName.Insert("January");
-			NoteDateFormat.MonthName.Insert("February");
-			NoteDateFormat.MonthName.Insert("March");
-			NoteDateFormat.MonthName.Insert("April");
-			NoteDateFormat.MonthName.Insert("May");
-			NoteDateFormat.MonthName.Insert("June");
-			NoteDateFormat.MonthName.Insert("July");
-			NoteDateFormat.MonthName.Insert("August");
-			NoteDateFormat.MonthName.Insert("September");
-			NoteDateFormat.MonthName.Insert("October");
-			NoteDateFormat.MonthName.Insert("November");
-			NoteDateFormat.MonthName.Insert("December");
-
-			// Set default blacklisted words
-			WordBlacklist.Insert("REALLY_NASTY_WORDS_THAT");
-			WordBlacklist.Insert("YOU_DONT_WANT_WRITTEN");
-
-			// Save config
-			Save();
+			else
+			{
+				// Config exists and version matches, stop here.
+				return;
+			}
 		}
+
+		// Clear old config
+		WordBlacklist.Clear();
+
+		// Set new config version
+		ConfigVersion = CONFIG_VERSION;
+
+		// Set default config
+		AllowChangingFonts = true;
+		SendPlayerWarning = "We don't tolerate that sort of language on our server. Your note has been logged and any repeat offenses may result in a permanent ban.";
+		PenConsumeQuantity = 3;
+
+		// Set default date format
+		NoteDateFormat = new ZenNoteDateFormat;
+		NoteDateFormat.Format = 1;
+		NoteDateFormat.DaySuffix = new array<string>;
+		NoteDateFormat.DaySuffix.Insert("st");
+		NoteDateFormat.DaySuffix.Insert("nd");
+		NoteDateFormat.DaySuffix.Insert("rd");
+		NoteDateFormat.DaySuffix.Insert("th");
+		NoteDateFormat.MonthName = new array<string>;
+		NoteDateFormat.MonthName.Insert("January");
+		NoteDateFormat.MonthName.Insert("February");
+		NoteDateFormat.MonthName.Insert("March");
+		NoteDateFormat.MonthName.Insert("April");
+		NoteDateFormat.MonthName.Insert("May");
+		NoteDateFormat.MonthName.Insert("June");
+		NoteDateFormat.MonthName.Insert("July");
+		NoteDateFormat.MonthName.Insert("August");
+		NoteDateFormat.MonthName.Insert("September");
+		NoteDateFormat.MonthName.Insert("October");
+		NoteDateFormat.MonthName.Insert("November");
+		NoteDateFormat.MonthName.Insert("December");
+
+		// Set default blacklisted words
+		WordBlacklist.Clear();
+		WordBlacklist.Insert("REALLY_NASTY_WORDS_THAT");
+		WordBlacklist.Insert("YOU_DONT_WANT_WRITTEN");
+
+		// Save config
+		Save();
 	}
 
 	// Save config
@@ -117,6 +120,7 @@ class ZenNotesConfig
 	// Get readable date
 	string GetDate()
 	{
+		// 0 = no date.
 		if (NoteDateFormat.Format == 0)
 		{
 			return "";
@@ -130,6 +134,8 @@ class ZenNotesConfig
 		string date;
 		string dayNumber;
 		string monthNumber;
+		string dayStr;
+		string monthStr;
 
 		// Get day number (eg. convert 07 -> 7)
 		dayNumber = day.ToStringLen(2);
@@ -144,8 +150,6 @@ class ZenNotesConfig
 		if (NoteDateFormat.Format == 1) // eg. 23rd September, 2022
 		{
 			// Get formatted date 
-			string dayStr;
-			string monthStr;
 			dayStr = GetNumberDateyThingy(day);
 			monthStr = GetMonth(month);
 			date = dayNumber + dayStr + " " + monthStr + ", " + year.ToStringLen(4);
@@ -170,6 +174,14 @@ class ZenNotesConfig
 		{
 			date = monthNumber + "/" + dayNumber + "/" + year.ToStringLen(4);
 		}
+		else
+		if (NoteDateFormat.Format == 6) // eg. 23rd September
+		{
+			// Get formatted date 
+			dayStr = GetNumberDateyThingy(day);
+			monthStr = GetMonth(month);
+			date = dayNumber + dayStr + " " + monthStr ;
+		}
 
 		return date;
 	}
@@ -177,12 +189,54 @@ class ZenNotesConfig
 	// Returns the suffix of a date number (for lack of a more educated term)
 	string GetNumberDateyThingy(int number)
 	{
-		switch (number % 10)
+		// I tried this fancy solution I found on stack overflow but it made 12 look like 12nd instead of 12th... 
+		// And I'm not smart enough to think of a better solution than to just hard-code the fucker.
+		
+		/*switch (number % 10)
 		{
 			case 1:  return NoteDateFormat.DaySuffix.Get(0);
 			case 2:  return NoteDateFormat.DaySuffix.Get(1);
 			case 3:  return NoteDateFormat.DaySuffix.Get(2);
 			default: return NoteDateFormat.DaySuffix.Get(3);
+		}*/
+
+		switch (number)
+		{
+			case 1:
+			case 21:
+			case 31:
+				return NoteDateFormat.DaySuffix.Get(0); // 1st
+			case 2:
+			case 22:
+				return NoteDateFormat.DaySuffix.Get(1); // 2nd
+			case 3:
+			case 23:
+				return NoteDateFormat.DaySuffix.Get(2); // 3rd
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 11:
+			case 12:
+			case 13:
+			case 14:
+			case 15:
+			case 16:
+			case 17:
+			case 18:
+			case 19:
+			case 20:
+			case 24:
+			case 25:
+			case 26:
+			case 27:
+			case 28:
+			case 29:
+			case 30:
+				return NoteDateFormat.DaySuffix.Get(3); // 4th
 		}
 
 		return "";

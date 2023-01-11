@@ -20,10 +20,6 @@ class ActionZenWritePaper : ActionContinuousBase
 	// Check to make sure that we're using a pen on paper
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{
-		// Return true on server
-		if (GetGame().IsServer())
-			return true;
-
 		// If item or target doesn't exist, stop
 		if (!item || !target.GetObject())
 			return false;
@@ -96,7 +92,7 @@ class ActionZenWritePaper : ActionContinuousBase
 		}
 
 		// Send server-side date formatted to client
-		Param1<string> data = new Param1<string>(GetZenNotesConfig().GetDate());
+		Param2<string, bool> data = new Param2<string, bool>(GetZenNotesConfig().GetDate(), GetZenNotesConfig().AllowChangingFonts);
 		paper.RPCSingleParam(ZENNOTERPCs.RECEIVE_NOTE_DATE, data, true, action_data.m_Player.GetIdentity());
 	}
 

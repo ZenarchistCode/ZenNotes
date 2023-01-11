@@ -23,7 +23,7 @@ FrameWidgetClass MainFrame {
    vexactsize 1
    priority 1
    image0 "ZenNotes/data/gui/images/notebg.edds"
-   imageTexture "ZenMods/ZenNotes/data/gui/images/notebg.edds"
+   imageTexture "{7819C907890D2FF0}ZenMods/ZenNotes/data/gui/images/notebg.edds"
    mode blend
    "src alpha" 1
    "no wrap" 1
@@ -561,6 +561,257 @@ FrameWidgetClass MainFrame {
      "size to text v" 0
      "text halign" center
     }
+    MultilineTextWidgetClass NoteReadText0 {
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "gui/fonts/amorserifpro22"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+	MultilineTextWidgetClass NoteReadText1 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/papernotes"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText2 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/matthildur"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText3 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/turntablz"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText4 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/bringthanoize"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText5 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/jamesfajardo"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText6 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/ladylike"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText7 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/multikultural"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText8 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/scriptina"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText9 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/love"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText10 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/youmurderer"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
+    MultilineTextWidgetClass NoteReadText11 {
+     visible 0
+     disabled 1
+     inheritalpha 0
+     color 0 0 0 1
+     position 0.01 0.02
+     size 0.9 0.8
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZNormal
+     font "ZenNotes/data/fonts/andthishappened"
+     "exact text" 1
+     "size to text h" 0
+     "size to text v" 0
+     lines 30
+     "limit visible" 1
+    }
    }
   }
   ImageWidgetClass Background {
@@ -576,7 +827,7 @@ FrameWidgetClass MainFrame {
    vexactpos 1
    hexactsize 0
    vexactsize 0
-   imageTexture "gui/textures/inventory_bgvignette.edds"
+   imageTexture "{E6B3EF816E067499}gui/textures/inventory_bgvignette.edds"
    mode blend
    "src alpha" 1
    "no wrap" 0

@@ -32,17 +32,16 @@ modded class Paper
         // Client-side receiver for server-formatted date
         if (rpc_type == ZENNOTERPCs.RECEIVE_NOTE_DATE)
         {
-            string serverDateData;
-            Param1<string> client_params = new Param1<string>(serverDateData);
+            Param2<string, bool> data_from_server;
 
-            if (ctx.Read(client_params))
+            if (ctx.Read(data_from_server))
             {
-                if (client_params.param1 && client_params.param1 != "")
-                {
-                    ZenNoteGUI.DATE_TEXT = client_params.param1;
-                    m_UpdateTries = 0;
-                    GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(UpdateDateText, 250, false, client_params.param1);
-                }
+                // Set static variables (date text formatted by server & whether or not font can be changed)
+                ZenNoteGUI.DATE_TEXT = data_from_server.param1;
+                ZenNoteGUI.CAN_CHANGE_FONTS = data_from_server.param2;
+
+                // UI will be open before the above data is set, so we need to update it after data is received
+                GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(UpdateGUI, 50, false);
             }
 
             return;
@@ -58,18 +57,17 @@ modded class Paper
             if (!player) // If we can't identify the player who sent this note data, stop here.
                 return;
 
-            ZenNoteData clientNoteData;
-            Param1<ref ZenNoteData> server_params = new Param1<ref ZenNoteData>(clientNoteData);
+            Param1<ref ZenNoteData> data_from_client;
 
-            if (ctx.Read(server_params))
+            if (ctx.Read(data_from_client))
             {
-                if (server_params.param1)
+                if (data_from_client.param1)
                 {
                     // Check if the note contains any blacklisted words
-                    if (GetZenNotesConfig().IsBlacklisted(server_params.param1.m_NoteText))
+                    if (GetZenNotesConfig().IsBlacklisted(data_from_client.param1.m_NoteText))
                     {
                         // Log the blacklisted note for server admins
-                        ZenNotesLogger.Log("Blacklist", "[BLACKLIST] " + sender.GetName() + " (" + sender.GetPlainId() + ") @ " + this.GetPosition() + " tried to write: " + server_params.param1.m_NoteText);
+                        ZenNotesLogger.Log("Blacklist", "[BLACKLIST] " + sender.GetName() + " (" + sender.GetPlainId() + ") @ " + this.GetPosition() + " tried to write: " + data_from_client.param1.m_NoteText);
 
                         // If player warning is set, send it
                         if (GetZenNotesConfig().SendPlayerWarning != "")
@@ -82,10 +80,10 @@ modded class Paper
 
                     // Convert to written note item
                     ZenNoteData noteData = new ZenNoteData;
-                    noteData.m_FontIndex = server_params.param1.m_FontIndex;
-                    noteData.m_DateText = server_params.param1.m_DateText; // Server date
-                    noteData.m_NoteText = server_params.param1.m_NoteText;
-                    noteData.m_ARGBColour = server_params.param1.m_ARGBColour;
+                    noteData.m_FontIndex = data_from_client.param1.m_FontIndex;
+                    noteData.m_DateText = data_from_client.param1.m_DateText; // Server date
+                    noteData.m_NoteText = data_from_client.param1.m_NoteText;
+                    noteData.m_ARGBColour = data_from_client.param1.m_ARGBColour;
 
                     // If quantity of this paper is 1, swap the actual item
                     if (this.GetQuantity() == 1)
@@ -197,23 +195,17 @@ modded class Paper
     }
 
     // Updates the text GUI if it's visible
-    int m_UpdateTries = 0;
-    void UpdateDateText(string txt)
+    void UpdateGUI()
     {
-        m_UpdateTries++;
         UIScriptedMenu menu = GetGame().GetUIManager().GetMenu();
         if (menu)
         {
             ZenNoteGUI noteMenu = ZenNoteGUI.Cast(menu);
             if (noteMenu)
             {
-                noteMenu.SetDate(txt);
+                noteMenu.SetDate();
+                noteMenu.SetFontEnabled();
             }
-        }
-        else
-        if (m_UpdateTries < 10) // Try 10 times (2.5secs) to update the date, then give up.
-        {
-            GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(UpdateDateText, 250, false, txt);
         }
     }
 
@@ -221,7 +213,7 @@ modded class Paper
     void Zen_NoteSendMessage(PlayerBase player, string message)
     {
         Param1<string> m_MessageParam = new Param1<string>("");
-        if (GetGame().IsServer() && m_MessageParam && player.IsAlive() && !player.IsPlayerDisconnected() && message != "")
+        if (GetGame().IsDedicatedServer() && m_MessageParam && player.IsAlive() && !player.IsPlayerDisconnected() && message != "")
         {
             m_MessageParam.param1 = message;
             GetGame().RPCSingleParam(player, ERPCs.RPC_USER_ACTION_MESSAGE, m_MessageParam, true, player.GetIdentity());

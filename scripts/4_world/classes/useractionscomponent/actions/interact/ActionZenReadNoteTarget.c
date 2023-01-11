@@ -3,12 +3,12 @@ class ActionZenReadNoteTarget : ActionInteractBase
 	void ActionZenReadNote()
 	{
 		m_StanceMask = DayZPlayerConstants.STANCEMASK_ALL;
-		m_Text = "Read note";
+		m_Text = "#read";
 	}
 
 	override string GetText()
 	{
-		return "Read note";
+		return "#read";
 	}
 
 	override bool IsInstant()
@@ -18,7 +18,7 @@ class ActionZenReadNoteTarget : ActionInteractBase
 
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{
-		if (target && target.GetObject().IsInherited(ZenNote))
+		if (target && target.GetObject().IsInherited(ZenNote) && !item)
 			return true;
 
 		return false;

@@ -13,9 +13,9 @@ modded class ActionDeployObject
 
     override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
     {
-        if (!GetGame().IsMultiplayer() || GetGame().IsClient())
+        if (GetGame().IsClient())
         {
-            if (player.IsPlacingLocal() && (item.IsInherited(ZenNote)))
+            if (player.IsPlacingLocal() && item.IsKindOf("Paper"))
                 return true;
         }
 

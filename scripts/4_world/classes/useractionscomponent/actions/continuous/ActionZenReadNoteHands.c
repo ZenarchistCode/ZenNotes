@@ -21,11 +21,11 @@ class ActionZenReadNoteHands : ActionContinuousBase
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{
 		// Return true on server
-		if (GetGame().IsServer())
+		if (GetGame().IsDedicatedServer())
 			return true;
 
-		// If the player is currently looking at a note, disable the read note action on the note in their hands (to avoid confusion)
-		if (target && target.GetObject() && target.GetObject().IsInherited(ZenNote))
+		// If the player is currently looking at an object, disable the read note action
+		if (target.GetObject())
 			return false;
 
 		// Otherwise return true if the item in the player's hand is a note and they are not placing it as a hologram

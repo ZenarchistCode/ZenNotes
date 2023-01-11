@@ -5,6 +5,9 @@ class ZenNotesLogger
 
 	static void Log(string type, string txt)
 	{
+		if (!GetGame().IsDedicatedServer())
+			return;
+
 		string file_path = LOG_FOLDER + LOG_FILE + "_" + type + ".log";
 
 		if (!FileExist(LOG_FOLDER))

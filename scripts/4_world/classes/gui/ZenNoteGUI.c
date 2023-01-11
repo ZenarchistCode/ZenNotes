@@ -4,21 +4,26 @@ class ZenNoteGUI extends UIScriptedMenu
 	static const string LAYOUT_FILE = "ZenNotes/data/gui/layouts/NoteGUI.layout";
 
 	// Font variables
-	private int m_FontIndex = 0;
+	int m_FontIndex = 0;
 
 	// Text widgets
-	private ref array<ref MultilineEditBoxWidget> m_TextBoxes = {};
-	private ref array<ref TextWidget> m_Dates = {};
+	ref array<ref MultilineEditBoxWidget> m_TextBoxes = {};
+	ref array<ref TextWidget> m_Dates = {};
+
+	// Read-only widgets
+	ref array<ref MultilineTextWidget> m_TextReadBoxes = {};
 
 	// Button widgets
-	private ButtonWidget m_ExitBtn;
-	private ButtonWidget m_SelectFontBtn;
+	ButtonWidget m_ExitBtn;
+	ButtonWidget m_SelectFontBtn;
 
 	// Pen & paper variables
-	private ItemBase m_Paper;
-	private int m_PenColour;
+	ItemBase m_Paper;
+	int m_PenColour;
 	static string DATE_TEXT = "";
+	static bool CAN_CHANGE_FONTS = false;
 
+	// Not sure if this is necessary, but I always clean up after myself if you know what I mean
 	void ~ZenNoteGUI()
 	{
 		// Cleanup - unlink widgets
@@ -26,9 +31,14 @@ class ZenNoteGUI extends UIScriptedMenu
 		m_SelectFontBtn.Unlink();
 
 		// Unlink arrays
-		foreach (MultilineEditBoxWidget box : m_TextBoxes)
+		foreach (MultilineEditBoxWidget box1 : m_TextBoxes)
 		{
-			box.Unlink();
+			box1.Unlink();
+		}
+
+		foreach(MultilineTextWidget box2 : m_TextReadBoxes)
+		{
+			box2.Unlink();
 		}
 
 		foreach (TextWidget date : m_Dates)
@@ -47,10 +57,12 @@ class ZenNoteGUI extends UIScriptedMenu
 		for (int i = 0; i < 100; i++)
 		{
 			MultilineEditBoxWidget box = MultilineEditBoxWidget.Cast(layoutRoot.FindAnyWidget("NoteText" + i));
+			MultilineTextWidget readBox = MultilineTextWidget.Cast(layoutRoot.FindAnyWidget("NoteReadText" + i));
 			TextWidget date = TextWidget.Cast(layoutRoot.FindAnyWidget("DateText" + i));
 
-			if (box && date)
+			if (box && date && readBox)
 			{
+				m_TextReadBoxes.Insert(readBox);
 				m_TextBoxes.Insert(box);
 				m_Dates.Insert(date);
 				date.SetText(DATE_TEXT);
@@ -78,11 +90,24 @@ class ZenNoteGUI extends UIScriptedMenu
 			return NULL;
 		}
 
+		// Hide font button
+		m_SelectFontBtn.Enable(false);
+		m_SelectFontBtn.Show(false);
+
 		// Prevent user controls while note is open
 		GetGame().GetMission().PlayerControlDisable(INPUT_EXCLUDE_ALL);
 		GetGame().GetMission().GetHud().Show(false);
 
+		// Disable 3rd person view key while typing notes
+		GetUApi().GetInputByName("UAPersonView").Lock();
+
 		return layoutRoot;
+	}
+
+	// Flag as a keyboard input menu
+	override bool UseKeyboard()
+	{
+		return true;
 	}
 
 	// Set the paper reference object
@@ -97,34 +122,38 @@ class ZenNoteGUI extends UIScriptedMenu
 		// Set font index first
 		SetFontIndex(data.m_FontIndex);
 
-		MultilineEditBoxWidget edit_box = m_TextBoxes.Get(m_FontIndex);
+		// Get text boxes
+		MultilineTextWidget read_box = m_TextReadBoxes.Get(m_FontIndex);
 		TextWidget date = m_Dates.Get(m_FontIndex);
 
-		if (!edit_box || !date)
+		if (!read_box || !date)
 		{
 			OnExitBtnClick();
 			return;
 		}
 
-		edit_box.Show(true);
-		edit_box.SetText(data.m_NoteText);
-		date.Show(true);
-		date.SetText(data.m_DateText);
+		MultilineTextWidget temp_readBox;
+		MultilineEditBoxWidget temp_box;
+		TextWidget temp_date;
 
-		// Hide all editboxes that are not equal to the specified font index editbox sent from the server
+		// Hide all editboxes
 		for (int i = 0; i < m_TextBoxes.Count(); i++)
 		{
-			MultilineEditBoxWidget temp_box = m_TextBoxes.Get(i);
-			TextWidget temp_date = m_Dates.Get(i);
-
-			if (i != m_FontIndex)
-			{
-				temp_box.Enable(false);
-				temp_date.Enable(false);
-				temp_box.Show(false);
-				temp_date.Show(false);
-			}
+			temp_readBox = m_TextReadBoxes.Get(i);
+			temp_box = m_TextBoxes.Get(i);
+			temp_date = m_Dates.Get(i);
+			temp_readBox.Enable(false);
+			temp_readBox.Show(false);
+			temp_box.Enable(false);
+			temp_box.Show(false);
+			temp_date.Enable(false);
+			temp_date.Show(false);
 		}
+
+		read_box.Show(true);
+		read_box.SetText(data.m_NoteText);
+		date.Show(true);
+		date.SetText(data.m_DateText);
 
 		// Hide font selection
 		m_SelectFontBtn.Enable(false);
@@ -135,14 +164,20 @@ class ZenNoteGUI extends UIScriptedMenu
 	}
 
 	// Set note date (formatted by server)
-	void SetDate(string date)
+	void SetDate()
 	{
-		DATE_TEXT = date;
 		TextWidget dateWidget = m_Dates.Get(m_FontIndex);
 		if (dateWidget)
 		{
 			dateWidget.SetText(DATE_TEXT);
 		}
+	}
+
+	// Set whether or not font changing is enabled by server
+	void SetFontEnabled()
+	{
+		m_SelectFontBtn.Enable(CAN_CHANGE_FONTS);
+		m_SelectFontBtn.Show(CAN_CHANGE_FONTS);
 	}
 
 	// Set font index
@@ -154,14 +189,20 @@ class ZenNoteGUI extends UIScriptedMenu
 	// Set pen text colour
 	void SetPenColour(int colour)
 	{
-		// Set all edit box colours (for editing - if read only this doesn't matter)
+		// Set all edit box colours
 		foreach (MultilineEditBoxWidget box : m_TextBoxes)
 		{
 			box.SetColor(colour);
 		}
 
+		// Set all read box colours
+		foreach(MultilineTextWidget readBox : m_TextReadBoxes)
+		{
+			readBox.SetColor(colour);
+		}
+
 		// Set all date colours
-		foreach(TextWidget date : m_Dates)
+		foreach (TextWidget date : m_Dates)
 		{
 			date.SetColor(colour);
 		}
@@ -174,14 +215,19 @@ class ZenNoteGUI extends UIScriptedMenu
 	// Set read only
 	void SetReadOnly(bool readOnly)
 	{
-		// Set all edit box read-only
-		foreach (MultilineEditBoxWidget box : m_TextBoxes)
+		if (readOnly)
 		{
-			box.Enable(!readOnly);
+			// Hide all edit boxes
+			foreach(MultilineEditBoxWidget box : m_TextBoxes)
+			{
+				box.Enable(false);
+				box.Show(false);
+			}
 		}
 
 		// If note is NOT read-only, set last-used font
-		HandleFontClick(-1, GetZenNotesClientConfig().LastUsedFontStyle);
+		if (!readOnly)
+			HandleFontClick(-1, GetZenNotesClientConfig().LastUsedFontStyle);
 	}
 
 	// Handles clicks on button widgets
@@ -194,7 +240,7 @@ class ZenNoteGUI extends UIScriptedMenu
 			return OnExitBtnClick();
 		}
 
-		if (w == m_SelectFontBtn)
+		if (w == m_SelectFontBtn && CAN_CHANGE_FONTS)
 		{
 			return HandleFontClick(button);
 		}
@@ -202,9 +248,27 @@ class ZenNoteGUI extends UIScriptedMenu
 		return true;
 	}
 
+	// Suppress view key
+	override void Update(float timeslice)
+	{
+		super.Update(timeslice);
+
+		if (GetUApi())
+			GetUApi().GetInputByName("UAPersonView").Supress();
+	};
+
 	// Handle font click
 	bool HandleFontClick(int btn, int savedIndex = -1)
 	{
+		// Hide all read-only boxes
+		MultilineTextWidget read_box;
+		for (int i = 0; i < m_TextBoxes.Count(); i++)
+		{
+			read_box = m_TextReadBoxes.Get(i);
+			read_box.Show(false);
+			read_box.Enable(false);
+		}
+
 		// Prepare txt string for swapping editbox contents
 		string msgTxt;
 
@@ -318,6 +382,7 @@ class ZenNoteGUI extends UIScriptedMenu
 				{
 					mission.PlayerControlEnable(true);
 					mission.GetHud().Show(true);
+					GetUApi().GetInputByName("UAPersonView").Unlock();
 				}
 			}
 		}
@@ -333,7 +398,7 @@ class ZenNoteGUI extends UIScriptedMenu
 	private void ErrorMsg(string s)
 	{
 		Print("[ZenNotesGUI] Error - " + s);
-		ZenNote_DebugMsg("[ZenNotesGUI] Error - " + s + " Please tell the server admin to contact Zenarchist");
+		ZenNote_DebugMsg("[ZenNotesGUI] Error - " + s + ". Please tell the server admin to contact Zenarchist");
 	}
 
 	// Used only for debugging
