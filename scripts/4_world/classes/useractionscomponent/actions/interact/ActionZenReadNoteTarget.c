@@ -18,8 +18,8 @@ class ActionZenReadNoteTarget : ActionInteractBase
 
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{
-		if (target && target.GetObject().IsInherited(ZenNote) && !item)
-			return true;
+		if (target && target.GetObject().IsInherited(ZenNote))
+			return !player.IsPlacingLocal();
 
 		return false;
 	}
