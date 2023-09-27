@@ -43,4 +43,10 @@ class ActionZenReadNoteHands : ActionContinuousBase
 			note.RPCSingleParam(ZENNOTERPCs.RECEIVE_WRITTEN_NOTE, data, true, action_data.m_Player.GetIdentity());
 		}
 	}
+
+	// For compatibility with @ZenCraftingSounds
+	override string GetSoundCategory(ActionData action_data)
+	{
+		return "Zen_Paper";
+	}
 };

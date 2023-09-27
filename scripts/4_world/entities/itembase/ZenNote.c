@@ -59,21 +59,28 @@ class ZenNote extends Paper
 		// Client-side receiver
 		if (rpc_type == ZENNOTERPCs.RECEIVE_WRITTEN_NOTE)
 		{
-			if (ctx.Read(params))
+			if (!ctx.Read(params) || !params.param1)
 			{
-				if (params.param1)
-				{
-					m_ZenNoteData = params.param1;
+				Print("ERROR! Failed to read ZenNote data ZENNOTERPCs.RECEIVE_WRITTEN_NOTE - tell Zenarchist he fucked up!");
+				return;
+			}
 
-					// Show note GUI as read-only
-					ZenNoteGUI gui = ZenNoteGUI.Cast(GetGame().GetUIManager().EnterScriptedMenu(MENU_ZEN_NOTE_GUI, NULL));
+			m_ZenNoteData = params.param1;
 
-					if (gui)
-					{
-						gui.SetNoteData(m_ZenNoteData);
-						gui.SetReadOnly(true);
-					}
-				}
+			// Show note GUI as read-only
+			ZenNoteGUI gui = ZenNoteGUI.Cast(GetGame().GetUIManager().EnterScriptedMenu(MENU_ZEN_NOTE_GUI, NULL));
+
+			if (gui)
+			{
+				gui.SetNoteData(m_ZenNoteData);
+				gui.SetReadOnly(true);
+			}
+
+			// For compatibility with @ZenCraftingSounds
+			if (GetGame().ConfigIsExisting("CfgSoundSets Zen_Paper_loop_SoundSet"))
+			{
+				EffectSound effect = SEffectManager.PlaySound("Zen_Paper_loop_SoundSet", GetPosition());
+				effect.SetAutodestroy(true);
 			}
 		}
 	}

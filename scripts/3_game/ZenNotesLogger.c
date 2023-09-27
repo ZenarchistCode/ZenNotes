@@ -11,7 +11,8 @@ class ZenNotesLogger
 		string file_path = LOG_FOLDER + LOG_FILE + "_" + type + ".log";
 
 		if (!FileExist(LOG_FOLDER))
-		{	// If log folder doesn't exist, create it.
+		{	
+			// If log folder doesn't exist, create it.
 			MakeDirectory(LOG_FOLDER);
 		}
 

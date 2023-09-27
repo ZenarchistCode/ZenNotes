@@ -109,4 +109,10 @@ class ActionZenWritePaper : ActionContinuousBase
 		// Return RGB converted to ARGB with 100% opacity (255 alpha)
 		return ARGB(255, rgbArray[0], rgbArray[1], rgbArray[2]);
 	}
+
+	// For compatibility with @ZenCraftingSounds
+	override string GetSoundCategory(ActionData action_data)
+	{
+		return "Zen_Paper";
+	}
 };
