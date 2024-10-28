@@ -17,6 +17,9 @@ class ZenNoteGUI extends UIScriptedMenu
 	ButtonWidget m_ExitBtn;
 	ButtonWidget m_SelectFontBtn;
 
+	// Damage layer image widget
+	ImageWidget m_DamageLayer;
+
 	// Pen & paper variables
 	ItemBase m_Paper;
 	int m_PenColour;
@@ -76,6 +79,7 @@ class ZenNoteGUI extends UIScriptedMenu
 		// Load required widgets
 		m_ExitBtn		= ButtonWidget.Cast(layoutRoot.FindAnyWidget("CloseBtn"));
 		m_SelectFontBtn = ButtonWidget.Cast(layoutRoot.FindAnyWidget("FontBtn"));
+		m_DamageLayer	= ImageWidget.Cast(layoutRoot.FindAnyWidget("DamageLayer"));
 		
 		// Set select style language
 		ButtonWidget fontBtn = ButtonWidget.Cast(layoutRoot.FindAnyWidget("FontBtn"));
@@ -114,6 +118,18 @@ class ZenNoteGUI extends UIScriptedMenu
 	void SetPaper(ItemBase item)
 	{
 		m_Paper = item;
+
+		int dmgState = m_Paper.GetHealthLevel("");
+
+		if (dmgState != GameConstants.STATE_PRISTINE)
+			m_DamageLayer.Show(true);
+
+		if (dmgState == GameConstants.STATE_WORN)
+			m_DamageLayer.SetAlpha(0.3);
+		else if (dmgState == GameConstants.STATE_DAMAGED)
+			m_DamageLayer.SetAlpha(0.6);
+		else if (dmgState <= GameConstants.STATE_BADLY_DAMAGED)
+			m_DamageLayer.SetAlpha(0.9);
 	}
 
 	// READ-ONLY NOTE DATA SENT - we're reading a note that's already written and saved.
