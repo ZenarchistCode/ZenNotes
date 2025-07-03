@@ -1,0 +1,11 @@
+Language,original,english,czech,german,russian,polish,hungarian,italian,spanish,french,chinese,japanese,portuguese,chinesesimp
+STR_ZenNoteTxt,"Note","Note","Poznámka","Notiz","Примечание","Notatka","jegyzet","Nota","Nota","Note","筆記","注記","",""
+STR_ZenNoteDesc,"It's a written note left behind by a survivor...","It's a written note left behind by a survivor...","Je to písemná poznámka, kterou po sobě zanechal přeživší","Es ist eine schriftliche Notiz, die ein Überlebender hinterlassen hat","Это записка, оставленная выжившим.","To pisemna notatka pozostawiona przez ocalałego","Ez egy írásos feljegyzés, amelyet egy túlélő hagyott hátra","È un biglietto scritto lasciato da un sopravvissuto","Es una nota escrita dejada por un sobreviviente.","C'est une note écrite laissée par un survivant","這是倖存者留下的一張紙條","それは生存者が残した手記だ","",""
+STR_ZenNoteStyle,"Select Style","Select Style","Vyberte Styl","Wählen Sie Stil aus","Выберите стиль","Wybierz Styl","Válassza a Stílus lehetőséget","Seleziona Stile","Seleccionar estilo","Sélectionnez le style","選擇風格","スタイルの選択","",""
+STR_ZenPen_Black,"Black Pen","Black Pen","Černé pero","Schwarzer Stift","Черная ручка","Czarny długopis","Fekete toll","Penna nera","Lápiz negro","Stylo noir","駭筆","黒ペン","",""
+STR_ZenPen_Red,"Red Pen","Red Pen","Červené pero","Roter Stift","Красное перо","Czerwony długopis","Piros toll","Penna rossa","Boligrafo rojo","Stylo rouge","紅筆","赤いペン","",""
+STR_ZenPen_Green,"Green Pen","Green Pen","Zelené pero","Grüner Stift","Зеленая ручка","Zielony długopis","Zöld toll","Penna Verde","Bolígrafo verde","Stylo vert","綠筆","緑のペン","",""
+STR_ZenPen_Blue,"Blue Pen","Blue Pen","Modré pero","Blauer Stift","Синяя ручка","Niebieski długopis","Kék toll","Penna blu","Bolígrafo azul","Stylo bleu","藍色筆","青ペン","",""
+STR_ZenPen_Pink,"Pink Pen","Pink Pen","Růžové pero","Rosa Stift","Розовая ручка","Różowy długopis","Rózsaszín toll","Penna rosa","Bolígrafo rosa","Stylo Rose","粉紅筆","ピンクのペン","",""
+STR_ZenPen_Purple,"Purple Pen","Purple Pen","Fialové pero","Lila Stift","Фиолетовая ручка","Fioletowy długopis","Lila toll","Penna viola","Bolígrafo morado","Stylo violet","紫色筆","紫ペン","",""
+STR_ZenPen_Orange,"Orange Pen","Orange Pen","Oranžové pero","Orangefarbener Stift","Оранжевая ручка","Pomarańczowy długopis","Narancssárga toll","Penna arancione","Bolígrafo naranja","Stylo Orange","橘色筆","オレンジペン","",""

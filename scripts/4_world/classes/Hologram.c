@@ -1,9 +1,9 @@
-// Allows notes to be placed anywhere
 modded class Hologram
 {
-	override void EvaluateCollision(ItemBase action_item = null)
+    override void EvaluateCollision(ItemBase action_item = null)
 	{
-		if (action_item && action_item.IsInherited(ZenNote))
+        //! NOTES
+		if (action_item.IsInherited(ZenNote))
 		{
 			SetIsColliding(false);
 			return;

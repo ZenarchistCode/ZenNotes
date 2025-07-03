@@ -1,36 +1,26 @@
 modded class Paper
 {
-    // Prepare required paper note variables
-    private int m_NotePickupTries = 0;
-    Pen_ColorBase m_Pen;
-
-    // Delete paper object - clear pen reference
-    void ~Paper()
-    {
-        m_Pen = NULL;
-    }
-
-    // Set note actions
     override void SetActions()
 	{
 		super.SetActions();
-		RemoveAction(ActionWritePaper);
+
 		AddAction(ActionZenWritePaper);
 	}
 
-    // Set the pen object used to write with
+    private int m_NotePickupTries = 0;
+    Pen_ColorBase m_Pen;
+
     void SetPen(Pen_ColorBase pen)
     {
         m_Pen = pen;
     }
 
-    // Receive note data from client, then convert paper to written note
     override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
     {
         super.OnRPC(sender, rpc_type, ctx);
 
         // Client-side receiver for server-formatted date
-        if (rpc_type == ZENNOTERPCs.RECEIVE_NOTE_DATE)
+        if (rpc_type == ZenNotesRPCs.RECEIVE_NOTE_DATE)
         {
             Param2<string, bool> data_from_server;
 
@@ -41,20 +31,20 @@ modded class Paper
                 ZenNoteGUI.CAN_CHANGE_FONTS = data_from_server.param2;
 
                 // UI will be open before the above data is set, so we need to update it after data is received
-                GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(UpdateGUI, 50, false);
+                GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(UpdateGUI, 50, false);
             }
 
             return;
         }
 
         // Server-side receiver for note data written by client/player
-        if (rpc_type == ZENNOTERPCs.SEND_WRITTEN_NOTE)
+        if (rpc_type == ZenNotesRPCs.SEND_WRITTEN_NOTE)
         {
             int highBits, lowBits;
             GetGame().GetPlayerNetworkIDByIdentityID(sender.GetPlayerId(), lowBits, highBits);
             PlayerBase player = PlayerBase.Cast(GetGame().GetObjectByNetworkId(lowBits, highBits));
 
-            if (!player) // If we can't identify the player who sent this note data, stop here.
+            if (!player || !sender) // If we can't identify the player who sent this note data, stop here.
                 return;
 
             Param1<ref ZenNoteData> data_from_client;
@@ -67,7 +57,11 @@ modded class Paper
                     if (GetZenNotesConfig().IsBlacklisted(data_from_client.param1.m_NoteText))
                     {
                         // Log the blacklisted note for server admins
-                        ZenNotesLogger.Log("Blacklist", "[BLACKLIST] " + sender.GetName() + " (" + sender.GetPlainId() + ") @ " + this.GetPosition() + " tried to write: " + data_from_client.param1.m_NoteText);
+                        #ifdef ZENMODPACK
+                        ZenModLogger.Log("[BLACKLIST] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " tried to write: " + data_from_client.param1.m_NoteText, "notes");
+                        #else
+                        Print("[NOTES BLACKLIST] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " tried to write: " + data_from_client.param1.m_NoteText);
+                        #endif
 
                         // If player warning is set, send it
                         if (GetZenNotesConfig().SendPlayerWarning != "")
@@ -109,15 +103,14 @@ modded class Paper
                             return;
 
                         // Copy note data to the written note object
-                        MiscGameplayFunctions.TransferItemProperties(this, noteGround);
                         noteGround.SetNoteData(noteData);
+                        MiscGameplayFunctions.TransferItemProperties(this, noteGround);
 
                         // If player is holding the paper stack, replace it in their hands with a note and put paper back in inventory
                         if (player.GetItemInHands() == this && noteGround)
                         {
                             // Put the paper stack back in its reserved location, and place note into player's hands
                             HumanInventory inventory = player.GetHumanInventory();
-
                             if (!inventory)
                                 return;
 
@@ -141,7 +134,7 @@ modded class Paper
                             m_NotePickupTries = 0;
 
                             // Attempt to pick up the note from the ground
-                            GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).CallLater(TakeNoteToHands, 200, true, player, noteGround);
+                            GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TakeNoteToHands, 200, true, player, noteGround);
                         } 
                     }
 
@@ -152,7 +145,14 @@ modded class Paper
                     }
 
                     // Log note for server admins
-                    ZenNotesLogger.Log("General", sender.GetName() + " (" + sender.GetPlainId() + ") @ " + this.GetPosition() + " wrote: " + noteData.m_NoteText);
+                    string noteText = noteData.m_NoteText;
+                    noteText.Replace("\n", "");
+
+                    #ifdef ZENMODPACK
+                    ZenModLogger.Log(player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " wrote: " + noteText, "notes");
+                    #else
+                    Print("[ZenNotes] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " wrote: " + noteText);
+                    #endif
                 }
             }
         }
@@ -185,13 +185,13 @@ modded class Paper
             // Try to pick up note for ~1 second, if failed just abandon picking up the note and leave it on the ground
             if (m_NotePickupTries >= 5)
             {
-                GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).Remove(this.TakeNoteToHands);
+                GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(this.TakeNoteToHands);
             }
         }
         else
         {
             // If there is no note, no player object, or they're dead, or they're uncon, or they're disconnected, stop trying to pick it up and leave note on ground.
-            GetGame().GetCallQueue(CALL_CATEGORY_SYSTEM).Remove(this.TakeNoteToHands);
+            GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(this.TakeNoteToHands);
         }
     }
 
@@ -220,18 +220,12 @@ modded class Paper
             GetGame().RPCSingleParam(player, ERPCs.RPC_USER_ACTION_MESSAGE, m_MessageParam, true, player.GetIdentity());
         }
     }
-}
+};
 
 // Lambda for replacing paper with written note object
 class ReplacePaperWithNoteLambda extends ReplaceItemWithNewLambdaBase
 {
     ref ZenNoteData m_NoteData;
-
-    void ~ReplacePaperWithNoteLambda()
-    {
-        m_NoteData = NULL;
-        delete m_NoteData;
-    }
 
     void ReplacePaperWithNoteLambda(EntityAI old_item, string new_item_type, ZenNoteData data)
     {
@@ -243,6 +237,9 @@ class ReplacePaperWithNoteLambda extends ReplaceItemWithNewLambdaBase
         super.CopyOldPropertiesToNew(old_item, new_item);
 
         ZenNote note = ZenNote.Cast(new_item);
+        if (!note)
+            return;
+
         note.SetNoteData(m_NoteData);
         MiscGameplayFunctions.TransferItemProperties(old_item, note);
 
@@ -251,7 +248,5 @@ class ReplacePaperWithNoteLambda extends ReplaceItemWithNewLambdaBase
             note.SetOrientation(old_item.GetOrientation());
             note.SetPosition(old_item.GetPosition());
         }
-
-        m_NoteData = NULL;
     }
 }

@@ -1,7 +1,6 @@
 modded class MissionBase
 {
-    // Create user interface
-    override UIScriptedMenu CreateScriptedMenu(int id)
+	override UIScriptedMenu CreateScriptedMenu(int id)
     {
         UIScriptedMenu menu = super.CreateScriptedMenu(id);
 
@@ -9,7 +8,8 @@ modded class MissionBase
         {
             switch (id)
             {
-                case MENU_ZEN_NOTE_GUI:
+				//! NOTES
+                case ZenNotesMenu.NOTE_GUI:
                 {
                     menu = new ZenNoteGUI;
                     break;

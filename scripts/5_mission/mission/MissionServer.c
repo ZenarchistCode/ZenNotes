@@ -3,9 +3,12 @@ modded class MissionServer
 	override void OnInit()
 	{
 		super.OnInit();
-		Print("[ZenNotes] OnInit");
 
-		// Load notes config
+		#ifdef ZENMODPACK
+		if (!ZenModEnabled("ZenNotes"))
+			return;
+		#endif
+
 		GetZenNotesConfig();
 	}
-};
+}

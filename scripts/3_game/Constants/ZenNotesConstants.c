@@ -1,0 +1,12 @@
+enum ZenNotesRPCs
+{
+	WRITE_NOTE = -3761990,
+	SEND_WRITTEN_NOTE,
+	RECEIVE_WRITTEN_NOTE,
+	RECEIVE_NOTE_DATE,
+}
+
+enum ZenNotesMenu
+{
+	NOTE_GUI = -4376190
+}
