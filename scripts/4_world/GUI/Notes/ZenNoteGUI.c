@@ -30,6 +30,9 @@ class ZenNoteGUI extends UIScriptedMenu
 	// Not sure if this is necessary, but I always clean up after myself if you know what I mean
 	void ~ZenNoteGUI()
 	{
+		if (!GetGame())
+			return;
+		
 		// Cleanup - unlink widgets
 		m_ExitBtn.Unlink();
 		m_SelectFontBtn.Unlink();
