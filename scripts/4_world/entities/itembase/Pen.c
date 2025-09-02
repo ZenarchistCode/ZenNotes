@@ -4,7 +4,7 @@ modded class Pen_ColorBase : Inventory_Base
 	{
 		super.SetActions();
 
-		RemoveAction(ActionWritePaper);
+		//RemoveAction(ActionWritePaper);
 		AddAction(ActionZenWritePaper);
 	}
 }

@@ -1,44 +1,51 @@
 class ZenNotesLogger
 {
-	const static string LOG_FOLDER = "$profile:\\Zenarchist\\Logs\\";
-	const static string LOG_FILE = "ZenNotes";
+	const static string LOG_FILE = "ZenNotes.log";
+	const static string BLACKLIST_LOG_FILE = "ZenNotes_Blacklist.log";
+	static string LOG_FOLDER = "$profile:\\Zenarchist\\Logs\\";
+	static string DATE_FORMAT = "";
 
-	static void Log(string type, string txt)
+	static void Log(string txt, bool blacklist = false)
 	{
-		if (!GetGame().IsDedicatedServer())
-			return;
-
-		string file_path = LOG_FOLDER + LOG_FILE + "_" + type + ".log";
-
 		if (!FileExist(LOG_FOLDER))
-		{	
-			// If log folder doesn't exist, create it.
+		{
 			MakeDirectory(LOG_FOLDER);
+		}
+
+		string file_path = LOG_FOLDER + LOG_FILE;
+		if (blacklist)
+		{
+			file_path = LOG_FOLDER + BLACKLIST_LOG_FILE;
 		}
 
 		FileHandle logFile = OpenFile(file_path, FileMode.APPEND);
 		if (logFile != 0)
 		{
-			FPrintln(logFile, GetDate() + " [ZenNotes] " + txt);
+			FPrintln(logFile, ZenNotesGetDate() + " | " + txt);
+			Print(ZenNotesGetDate() + " | " + txt);
 			CloseFile(logFile);
 		}
-	}
-
-	static private string GetDate(bool fileFriendly = false)
-	{
-		int year, month, day, hour, minute, second;
-
-		GetYearMonthDay(year, month, day);
-		GetHourMinuteSecond(hour, minute, second);
-
-		string date = day.ToStringLen(2) + "." + month.ToStringLen(2) + "." + year.ToStringLen(4) + " " + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2);
-		if (fileFriendly)
+		else 
 		{
-			date.Replace(" ", "_");
-			date.Replace(".", "-");
-			date.Replace(":", "-");
+			Error("Failed to open log file: " + file_path);
 		}
-
-		return date;
 	}
+}
+
+static string ZenNotesGetDate(bool fileFriendly = false)
+{
+	int year, month, day, hour, minute, second;
+
+	GetYearMonthDay(year, month, day);
+	GetHourMinuteSecond(hour, minute, second);
+
+	string date = day.ToStringLen(2) + "." + month.ToStringLen(2) + "." + year.ToStringLen(4) + " " + hour.ToStringLen(2) + ":" + minute.ToStringLen(2) + ":" + second.ToStringLen(2);
+	if (fileFriendly)
+	{
+		date.Replace(" ", "_");
+		date.Replace(".", "-");
+		date.Replace(":", "-");
+	}
+
+	return date;
 }

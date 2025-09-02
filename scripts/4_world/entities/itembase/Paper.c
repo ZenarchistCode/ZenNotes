@@ -57,16 +57,13 @@ modded class Paper
                     if (GetZenNotesConfig().IsBlacklisted(data_from_client.param1.m_NoteText))
                     {
                         // Log the blacklisted note for server admins
-                        #ifdef ZENMODPACK
-                        ZenModLogger.Log("[BLACKLIST] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " tried to write: " + data_from_client.param1.m_NoteText, "notes");
-                        #else
-                        Print("[NOTES BLACKLIST] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " tried to write: " + data_from_client.param1.m_NoteText);
-                        #endif
+                        ZenNotesLogger.Log("[BLACKLIST] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + GetPosition() + " tried to write:\n" + data_from_client.param1.m_NoteText, true);
 
                         // If player warning is set, send it
                         if (GetZenNotesConfig().SendPlayerWarning != "")
                         {
-                            Zen_NoteSendMessage(player, GetZenNotesConfig().SendPlayerWarning);
+                            NotificationSystem.SendNotificationToPlayerIdentityExtended(player.GetIdentity(), 10.0, "#layout_notification_info_warning", GetZenNotesConfig().SendPlayerWarning, "");
+                            //Zen_NoteSendMessage(player, GetZenNotesConfig().SendPlayerWarning);
                         }
 
                         return;
@@ -80,7 +77,7 @@ modded class Paper
                     noteData.m_ARGBColour = data_from_client.param1.m_ARGBColour;
 
                     // If quantity of this paper is 1, swap the actual item
-                    if (this.GetQuantity() == 1)
+                    if (GetQuantity() == 1)
                     {
                         // Prepare item replacement lambda
                         ReplacePaperWithNoteLambda lambda = new ReplacePaperWithNoteLambda(this, "ZenNote", noteData);
@@ -93,10 +90,10 @@ modded class Paper
                     }
                     else
                     {
-                        this.SetQuantity(this.GetQuantity() - 1);
+                        SetQuantity(GetQuantity() - 1);
 
                         // Spawn a note on the ground
-                        ZenNote noteGround = ZenNote.Cast(GetGame().CreateObjectEx("ZenNote", this.GetPosition(), ECE_PLACE_ON_SURFACE));
+                        ZenNote noteGround = ZenNote.Cast(GetGame().CreateObjectEx("ZenNote", GetPosition(), ECE_PLACE_ON_SURFACE));
 
                         // If note did not spawn, stop here.
                         if (!noteGround)
@@ -121,7 +118,7 @@ modded class Paper
 
                             // Get current paper inventory location (src)
                             InventoryLocation loc_src = new InventoryLocation;
-                            this.GetInventory().GetCurrentInventoryLocation(loc_src);
+                            GetInventory().GetCurrentInventoryLocation(loc_src);
 
                             // If player has moved an item into the paper's reserved slot, or ServerTakeToDst fails, just take paper to anywhere in inventory.
                             if (reservedIndex == -1 || !player.ServerTakeToDst(loc_src, loc_dst))
@@ -147,12 +144,8 @@ modded class Paper
                     // Log note for server admins
                     string noteText = noteData.m_NoteText;
                     noteText.Replace("\n", "");
-
-                    #ifdef ZENMODPACK
-                    ZenModLogger.Log(player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " wrote: " + noteText, "notes");
-                    #else
-                    Print("[ZenNotes] " + player.GetCachedName() + " (" + sender.GetId() + ") @ " + this.GetPosition() + " wrote: " + noteText);
-                    #endif
+                    string logMsg = player.GetCachedName() + " (" + sender.GetId() + ") @ " + GetPosition() + " wrote:\n" + noteText;
+                    ZenNotesLogger.Log(logMsg);
                 }
             }
         }
@@ -185,13 +178,13 @@ modded class Paper
             // Try to pick up note for ~1 second, if failed just abandon picking up the note and leave it on the ground
             if (m_NotePickupTries >= 5)
             {
-                GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(this.TakeNoteToHands);
+                GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(TakeNoteToHands);
             }
         }
         else
         {
             // If there is no note, no player object, or they're dead, or they're uncon, or they're disconnected, stop trying to pick it up and leave note on ground.
-            GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(this.TakeNoteToHands);
+            GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(TakeNoteToHands);
         }
     }
 

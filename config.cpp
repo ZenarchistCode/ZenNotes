@@ -124,6 +124,10 @@ class CfgVehicles
 		varQuantityMax = 100;
 		//varQuantityDestroyOnMin = 0;
 		stackedUnit = "percentage";
+		inventorySlot[] +=
+		{
+			"ZenJournal_Pen"
+		};
 	};
 	class Pen_Black : Pen_ColorBase
 	{
