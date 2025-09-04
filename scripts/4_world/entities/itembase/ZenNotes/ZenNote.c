@@ -3,6 +3,19 @@ class ZenNote extends Paper
 	// Store a reference to this note's data
 	protected ref ZenNoteData m_ZenNoteData;
 
+	override void DeferredInit()
+	{
+		super.DeferredInit();
+
+		if (GetGame().IsDedicatedServer())
+		{
+			if (GetZenNotesConfig().DeleteAllNotes)
+			{
+				DeleteSafe();
+			}
+		}
+	}
+
 	// Get item description - if player has read the note, display some note text
 	override string GetTooltip()
 	{

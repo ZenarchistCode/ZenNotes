@@ -53,6 +53,18 @@ modded class Paper
             {
                 if (data_from_client.param1)
                 {
+                    // Check if the player is blacklisted
+                    if (GetZenNotesConfig().IsPlayerBlacklisted(sender))
+                    {
+                        // If player warning is set, send it
+                        if (GetZenNotesConfig().BlacklistMessage != "")
+                        {
+                            NotificationSystem.SendNotificationToPlayerIdentityExtended(player.GetIdentity(), 10.0, "#layout_notification_info_warning", GetZenNotesConfig().BlacklistMessage, "");
+                        }
+
+                        return;
+                    }
+
                     // Check if the note contains any blacklisted words
                     if (GetZenNotesConfig().IsBlacklisted(data_from_client.param1.m_NoteText))
                     {

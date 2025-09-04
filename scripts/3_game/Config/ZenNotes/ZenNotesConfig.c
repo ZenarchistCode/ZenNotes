@@ -14,6 +14,9 @@ class ZenNotesConfig
 	ref ZenNoteDateFormat NoteDateFormat;
 	ref array<string> WordBlacklist = new array<string>;
 	string SendPlayerWarning;
+	bool DeleteAllNotes;
+	string BlacklistMessage;
+	ref array<string> SteamIDsBlacklist = new array<string>;
 
 	// Load config file or create default file if config doesn't exsit
 	void Load()
@@ -33,6 +36,7 @@ class ZenNotesConfig
 			else
 			{
 				// Config exists and version matches, stop here.
+				Save();
 				return;
 			}
 		}
@@ -89,6 +93,17 @@ class ZenNotesConfig
 
 		// Save JSON config
 		JsonFileLoader<ZenNotesConfig>.JsonSaveFile(zenModFolder + zenConfigName, this);
+	}
+
+	// Check if the given player ID is blacklisted 
+	bool IsPlayerBlacklisted(PlayerIdentity identity)
+	{
+		if (SteamIDsBlacklist.Count() > 0)
+		{
+			return SteamIDsBlacklist.Find(identity.GetId()) != -1 || SteamIDsBlacklist.Find(identity.GetPlainId()) != -1;
+		}
+
+		return false;
 	}
 
 	// Check if the given message contains a blacklisted word
