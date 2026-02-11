@@ -150,7 +150,7 @@ class ZenNotesConfig
 		if (NoteDateFormat.Format == 1) // eg. 23rd September, 2022
 		{
 			// Get formatted date 
-			dayStr = GetNumberDateyThingy(day);
+			dayStr = GetOrdinalSuffix(day);
 			monthStr = GetMonth(month);
 			date = dayNumber + dayStr + " " + monthStr + ", " + year.ToStringLen(4);
 		}
@@ -178,7 +178,7 @@ class ZenNotesConfig
 		if (NoteDateFormat.Format == 6) // eg. 23rd September
 		{
 			// Get formatted date 
-			dayStr = GetNumberDateyThingy(day);
+			dayStr = GetOrdinalSuffix(day);
 			monthStr = GetMonth(month);
 			date = dayNumber + dayStr + " " + monthStr ;
 		}
@@ -187,59 +187,20 @@ class ZenNotesConfig
 	}
 
 	// Returns the suffix of a date number (for lack of a more educated term)
-	string GetNumberDateyThingy(int number)
+	string GetOrdinalSuffix(int number)
 	{
-		// I tried this fancy solution I found on stack overflow but it made 12 look like 12nd instead of 12th... 
-		// And I'm not smart enough to think of a better solution than to just hard-code the fucker.
-		
-		/*switch (number % 10)
-		{
-			case 1:  return NoteDateFormat.DaySuffix.Get(0);
-			case 2:  return NoteDateFormat.DaySuffix.Get(1);
-			case 3:  return NoteDateFormat.DaySuffix.Get(2);
-			default: return NoteDateFormat.DaySuffix.Get(3);
-		}*/
+		int n = number % 10;
+		int k = number % 100;
 
-		switch (number)
-		{
-			case 1:
-			case 21:
-			case 31:
-				return NoteDateFormat.DaySuffix.Get(0); // 1st
-			case 2:
-			case 22:
-				return NoteDateFormat.DaySuffix.Get(1); // 2nd
-			case 3:
-			case 23:
-				return NoteDateFormat.DaySuffix.Get(2); // 3rd
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
-			case 10:
-			case 11:
-			case 12:
-			case 13:
-			case 14:
-			case 15:
-			case 16:
-			case 17:
-			case 18:
-			case 19:
-			case 20:
-			case 24:
-			case 25:
-			case 26:
-			case 27:
-			case 28:
-			case 29:
-			case 30:
-				return NoteDateFormat.DaySuffix.Get(3); // 4th
+		if (n % 10 == 1 && k % 100 != 11) {
+			return NoteDateFormat.DaySuffix.Get(0);
+		} else if (n % 10 == 2 && k % 100 != 12) {
+			return NoteDateFormat.DaySuffix.Get(1);
+		} else if (n % 10 == 3 && k % 100 != 13) {
+			return NoteDateFormat.DaySuffix.Get(2);
 		}
 
-		return "";
+		return NoteDateFormat.DaySuffix.Get(3);
 	}
 
 	// Gets the month as a string
