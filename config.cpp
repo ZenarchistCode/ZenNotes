@@ -7,7 +7,8 @@
 		{
 			"DZ_Data",
 			"DZ_Scripts",
-			"DZ_Gear_Consumables"
+			"DZ_Gear_Consumables",
+			"ZenModCore"
 		};
 	};
 };
@@ -30,43 +31,24 @@ class CfgMods
 		};
 		class defs
 		{
-			class engineScriptModule
-			{
-				files[]=
-				{
-					"ZenNotes/scripts/1_Core",
-					"ZenNotes/scripts/Common"
-				};
-			};
-			class gameLibScriptModule
-			{
-				files[]=
-				{
-					"ZenNotes/scripts/2_GameLib",
-					"ZenNotes/scripts/Common"
-				};
-			};
 			class gameScriptModule
 			{
 				files[] = 
-				{ 
-					"ZenNotes/scripts/Common",
+				{
 					"ZenNotes/scripts/3_Game"
 				};
 			};
 			class worldScriptModule
 			{
 				files[] = 
-				{ 
-					"ZenNotes/scripts/Common",
+				{
 					"ZenNotes/scripts/4_World"
 				};
 			};
 			class missionScriptModule
 			{
 				files[] = 
-				{ 
-					"ZenNotes/scripts/Common",
+				{
 					"ZenNotes/scripts/5_mission"
 				};
 			};
@@ -105,6 +87,14 @@ class CfgVehicles
 	class ZenNote : Paper
 	{
 		scope = 2;
+		hiddenSelections[]=
+		{ 
+			"zbytek" 
+		};
+		hiddenSelectionsTextures[]=
+		{
+			"ZenNotes/data/textures/notes/note_black_co.paa"
+		};
 		displayName = "$STR_ZenNoteTxt";
 		descriptionShort = "$STR_ZenNoteDesc";
 		canBeSplit = 0;
